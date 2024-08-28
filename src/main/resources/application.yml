@@ -5,5 +5,16 @@ server:
     context-path: /api/v1/
 
 
+spring:
+  mail:
+    protocol: smtp
+    host: smtp.mailersend.net
+    port: 587
+    username: MS_qXeFpE@trial-yzkq3407qw0ld796.mlsender.net
+    password: slDSn2qaiIsZiXSR
+    default-encoding: UTF-8
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 
 

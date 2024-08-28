@@ -1,7 +1,35 @@
+
+buildscript {
+    repositories {
+
+        ['http://192.168.122.157:8081/artifactory/jfrog-gradle-release',
+         'http://192.168.122.157:8081/artifactory/jfrog-gradle-dev',
+         'http://192.168.122.157:8081/artifactory/jfrog-gradle-dev-local'
+        ].forEach {
+            repo ->
+                maven {
+                    url repo
+                    allowInsecureProtocol = true
+                    credentials {
+                        username = "${artifactory_user}"
+                        password = "${artifactory_password}"
+                    }
+                }
+        }
+        mavenCentral()
+
+    }
+    dependencies {
+        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
+    }
+}
+
+
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.1.2'
-    id 'io.spring.dependency-management' version '1.1.2'
+    id 'org.springframework.boot' version '3.3.1'
+    id 'io.spring.dependency-management' version '1.1.5'
 }
 
 group = 'com.example'
@@ -11,20 +39,61 @@ java {
     sourceCompatibility = '17'
 }
 
+
+allprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: "com.jfrog.artifactory"
+}
+
+
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            repoKey = 'jfrog-gradle-dev-local'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+    }
+}
+
+
+
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
 }
 
+
 repositories {
+    ['http://192.168.122.157:8081/artifactory/jfrog-gradle-release',
+     'http://192.168.122.157:8081/artifactory/jfrog-gradle-dev',
+     'http://192.168.122.157:8081/artifactory/jfrog-gradle-dev-local'
+    ].forEach {
+        repo ->
+            maven {
+                url uri(repo)
+                allowInsecureProtocol = true
+                setAllowInsecureProtocol(true)
+                credentials {
+                    username = "${artifactory_user}"
+                    password = "${artifactory_password}"
+                }
+            }
+    }
     mavenCentral()
 }
+
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework:spring-aspects'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
@@ -33,4 +102,32 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+
+publishing {
+    publications {
+        myMaven(MavenPublication) {
+            from components.java
+            groupId = group
+            artifactId = jar.archiveBaseName
+            version = "${version}"
+
+            pom {
+                name = 'My Kafka Library'
+                description = 'A description of my kafka library'
+
+            }
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+            url = 'http://192.168.122.157:8081/artifactory/jfrog-gradle-dev-local'
+            allowInsecureProtocol = true
+        }
+    }
 }
