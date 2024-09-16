@@ -1,8 +1,8 @@
 server:
-  port: 8081
+  port: 8080
 
   servlet:
-    context-path: /api/v1/
+    context-path: /v1/send-mail
 
 
 spring:
@@ -12,6 +12,7 @@ spring:
     port: 587
     username: MS_qXeFpE@trial-yzkq3407qw0ld796.mlsender.net
     password: slDSn2qaiIsZiXSR
+    token: mlsn.3bffefb6432463c7d50fc2a1d7381364e31c385bc808bf7ee80bf4e076fbc7d8
     default-encoding: UTF-8
     properties:
       mail.smtp.auth: true

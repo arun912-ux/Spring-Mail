@@ -84,6 +84,7 @@ repositories {
                 }
             }
     }
+    mavenLocal()
     mavenCentral()
 }
 
