@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Spring Mail Bruno",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

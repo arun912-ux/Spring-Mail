@@ -77,9 +77,8 @@ public class MailService {
 
             mailSender.send(mimeMessage);
 
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        } catch (MalformedURLException e) {
+        } catch (MessagingException | MalformedURLException e) {
+            log.error("Failed to send mail to {} due to {}", mail, e.getMessage());
             throw new RuntimeException(e);
         }
 
